@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' gap:; style-src 'self' 'unsafe-inline'; media-src *" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <title>Voiceless</title>
+</head>
+<body style="overflow: hidden">
+    <div class="startpage">
+        <div class="appVersion">
+            0.2.0 Beta
+        </div>
+        <div class="app">
+            <h1>Voiceless</h1>
+            <div id="deviceready" class="blink">
+                <div class="event">
+                    <div class="listening" style="display:block;">در حال دریافت اطلاعات...</div>
+                    <span class="loadprogressbar">&nbsp;</span>
+                    <div class="received" style="display:none;">لطفاً صفحه را لمس کنید.</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="root">
+        <header>
+            <img id="user-btn" type="button" src="inc/icon/user-circle.svg">
+            <img id="top-logo" src="img/logo.png">
+            <a id="online-btn" type="button" onclick="app.getInfoApi()" src=""></a>
+            <h1 class="header-title"> V O I C L E S S . i R</h1>
+        </header>
+        <img id="back-btn" src="inc/icon/arrow-circle-left.svg" style="display: none">
+        <div class="switches" style="display: none">
+            <!-- <div class="player-options">خواننده<label class="switch"> -->
+                <!-- <input id="switch-vocal" type="checkbox" value="On"> -->
+                <!-- <span class="slider round"></span> -->
+            <!-- </label></div> -->
+            <!-- <div class="player-options">آهنگ<label class="switch"> -->
+                <!-- <input id="switch-song" type="checkbox" value="On" checked=""> -->
+                <!-- <span class="slider round"></span> -->
+            <!-- </label></div> -->
+            <div class="player-options">آکوردها<label class="switch">
+                <input id="switch-chords" onclick="toggleChordSwitch();" type="checkbox" value="Off">
+                <span class="slider round"></span>
+            </label></div>
+        </div>
+        <div class="full-body">
+            <div class="full-canvas">
+                <canvas id="waveCanvas"></canvas>
+                <h3 id="TimerCounter"></h3>
+                <div id="textWaveCanvas"></div>
+                <div class="chordCanvas"></div>
+            </div>
+                <div id="container"></div>
+        </div>
+        <footer>
+            <div class="navbar">
+                <div id="home" class="bot-icon activetab">
+                    <svg viewBox="0 0 576 512"><path d="M336 463.58v-95.64a16 16 0 0 0-16-16h-64a16 16 0 0 0-16 16v95.71a16 16 0 0 1-15.92 16l-112.08.29a16 16 0 0 1-16-16V300.05L280.39 148.2a12.19 12.19 0 0 1 15.3 0L480 299.94v164a16 16 0 0 1-16 16l-112-.31a16 16 0 0 1-16-16.05z" class="fa-secondary"/>
+                        <path d="M530.92 300.94L295.69 107.2a12.19 12.19 0 0 0-15.3 0L45.17 300.94a12 12 0 0 1-16.89-1.64l-25.5-31a12 12 0 0 1 1.61-16.89l253.1-208.47a48 48 0 0 1 61 0l253.13 208.47a12 12 0 0 1 1.66 16.89l-25.5 31a12 12 0 0 1-16.86 1.64z" class="fa-primary"/></svg>
+                    <span>خانه</span>
+                </div>
+                <div id="search" class="bot-icon">
+                    <svg viewBox="0 0 512 512"><path d="M208 80a128 128 0 1 1-90.51 37.49A127.15 127.15 0 0 1 208 80m0-80C93.12 0 0 93.12 0 208s93.12 208 208 208 208-93.12 208-208S322.88 0 208 0z" class="fa-secondary"/>
+                        <path d="M504.9 476.7L476.6 505a23.9 23.9 0 0 1-33.9 0L343 405.3a24 24 0 0 1-7-17V372l36-36h16.3a24 24 0 0 1 17 7l99.7 99.7a24.11 24.11 0 0 1-.1 34z" class="fa-primary"/></svg>
+                    <span>جستجو</span>
+                </div>
+                <div id="favorite" class="bot-icon">
+                    <svg viewBox="0 0 512 512"><path d="M462.32 62.63C407.5 15.94 326 24.33 275.69 76.23L256 96.53l-19.69-20.3c-50.21-51.9-131.8-60.29-186.61-13.6-62.78 53.6-66.09 149.81-9.88 207.9l193.5 199.79a31.31 31.31 0 0 0 45.28 0l193.5-199.79c56.31-58.09 53-154.3-9.78-207.9zm-52.8 185l-143.1 143.85a15.29 15.29 0 0 1-21.7 0l-140-140.78c-28.37-28.52-33.78-75-8.37-106.23a76.44 76.44 0 0 1 113.77-5.88l45.49 45.7 42.37-42.58c28.38-28.52 74.65-34 105.71-8.45a77.35 77.35 0 0 1 5.83 114.36z" class="fa-secondary"/>
+                        <path d="M244.72 391.48l-140-140.78c-28.37-28.52-33.78-75-8.36-106.23a76.43 76.43 0 0 1 113.76-5.88l45.49 45.7 42.37-42.58c28.38-28.51 74.65-34 105.71-8.45a77.35 77.35 0 0 1 5.87 114.36L266.41 391.48a15.28 15.28 0 0 1-21.69 0z" class="fa-primary"/></svg>
+                    <span>مورد علاقه</span>
+                </div>
+            </div>
+            <div class="lyrics-controller" style="display: none">
+                <div id="canvass">
+                    <canvas id="myCanvas"></canvas>
+                    <canvas id="frontCanvas"></canvas>
+                </div>
+                <div id="sticky-controller" class="controller-buttons">
+                    <div class="vol-holder">
+                        <a id="mute1" onclick="muteUnmuteTrack(1);" class="mute mute-button active-btn">
+                            <img src="./inc/icon/microphone-alt.svg"></img>
+                        </a>
+                        <input type="range" oninput="setVolumeOfTrackDependingOnSliderValue(1);" id="volume1"  min="0" max="100" value="100" class="volumeSlider"style="opacity: 1;">
+                    </div>
+                    <div id="lyric-player" class="play-holder">
+                        <div id="listerner-play"></div>
+                        <div id="listerner-pause"></div>
+                        <a onclick="pauseAllTracks();" class="playback-button" id="pause-button">
+                            <img src="./inc/icon/play-light.svg"></img>
+                        </a>
+                        <a onclick="stopAllTracks();" class="playback-button" id="stop-button">
+                            <img src="./inc/icon/stop.svg"></img>
+                        </a>
+                        <a onclick="toggleRecordMix();" class="playback-button" id="recordMix">
+                            <img src="./inc/icon/record-vinyl.svg"></img>
+                        </a>
+                        
+                    </div>
+                    <div id="volume" class="vol-holder" style="opacity: 1;display:none">
+                        <input type="range" id="masterVolume" oninput="setMasterVolumeFuckingValue()" min="0" max="100" value="100" class="vol-slider" >
+                        <a id="bsound" onclick="masterMuteUnmute(this);" class="mute-button active-btn">
+                            <img src="./inc/icon/microphone-alt.svg"></img>
+                        </a>
+                    </div>
+                    <div class="vol-holder">
+                        <input type="range" oninput="setVolumeOfTrackDependingOnSliderValue(0);" id="volume0" min="0" max="100" value="100" class="volumeSlider" style="opacity: 1;">
+                        <a id="mute0" onclick="muteUnmuteTrack(0);" class="mute mute-button active-btn">
+                            <img src="./inc/icon/music-alt.svg"></img>
+                        </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/downloader.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+    <script type="text/javascript" src="js/bhd-lyrics.js"></script>
+    <script type="text/javascript" src="js/player.js"></script>
+    <script src="js/AudioContextMonkeyPatch.js"></script>
+    <script src="js/view.js"></script>
+    <script src="js/waveformDrawer.js"></script>
+    <script src="js/track.js"></script>
+    <script src="js/song.js"></script>
+    <script src="js/buffer-loader.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/canvasArrows.js"></script>
+    <script src="js/range-touch.js"></script>
+    <script src="js/recorderjs/recorder.js"></script>
+</body>
+
+</html>
